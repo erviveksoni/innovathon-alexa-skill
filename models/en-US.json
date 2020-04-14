@@ -1,0 +1,580 @@
+{
+  "interactionModel": {
+      "languageModel": {
+          "invocationName": "otto app",
+          "modelConfiguration": {
+              "fallbackIntentSensitivity": {
+                  "level": "LOW"
+              }
+          },
+          "intents": [
+              {
+                  "name": "AMAZON.FallbackIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.CancelIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.HelpIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.StopIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.NavigateHomeIntent",
+                  "samples": []
+              },
+              {
+                  "name": "GreetMeIntent",
+                  "slots": [],
+                  "samples": [
+                      "name",
+                      "what's my name",
+                      "what is my name"
+                  ]
+              },
+              {
+                  "name": "EmailIntent",
+                  "slots": [],
+                  "samples": [
+                      "email",
+                      "what is my email",
+                      "what's my email address"
+                  ]
+              },
+              {
+                  "name": "MobileIntent",
+                  "slots": [],
+                  "samples": [
+                      "mobile",
+                      "phone",
+                      "mobile number",
+                      "what is my mobile number",
+                      "what is my phone number"
+                  ]
+              },
+              {
+                  "name": "OrderStatusIntent",
+                  "slots": [
+                      {
+                          "name": "nameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "samples": [
+                              "show status for {nameSlot}",
+                              "order status for {nameSlot}",
+                              "{nameSlot}",
+                              "{nameSlot} please"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "status for my order",
+                      "the status of my order",
+                      "the status for my order",
+                      "the status for my {nameSlot}",
+                      "the status for {nameSlot}",
+                      "status of {nameSlot} order",
+                      "status of my {nameSlot} order",
+                      "status for my {nameSlot} order",
+                      "status for my {nameSlot}",
+                      "order status for {nameSlot}",
+                      "status of my {nameSlot}",
+                      "status of {nameSlot}",
+                      "status for {nameSlot}",
+                      "I would like to know the status for {nameSlot}"
+                  ]
+              },
+              {
+                  "name": "OrdersIntent",
+                  "slots": [
+                      {
+                          "name": "statusSlot",
+                          "type": "Status",
+                          "samples": [
+                              "{statusSlot} orders",
+                              "{statusSlot}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "show orders",
+                      "show {statusSlot} orders",
+                      "show all {statusSlot} orders",
+                      "show my orders",
+                      "show my {statusSlot} orders"
+                  ]
+              },
+              {
+                  "name": "AskForOrderStatusIntent",
+                  "slots": [
+                      {
+                          "name": "confirmSlot",
+                          "type": "Confirm",
+                          "samples": [
+                              "{confirmSlot}",
+                              "{confirmSlot} please"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "{confirmSlot}"
+                  ]
+              },
+              {
+                  "name": "RescheduleOrderIntent",
+                  "slots": [
+                      {
+                          "name": "nameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "samples": [
+                              "my order {nameSlot}",
+                              "{nameSlot}"
+                          ]
+                      },
+                      {
+                          "name": "daySlot",
+                          "type": "AMAZON.DayOfWeek",
+                          "samples": [
+                              "{daySlot}"
+                          ]
+                      },
+                      {
+                          "name": "beforeAfterSlot",
+                          "type": "BeforeAfter",
+                          "samples": [
+                              "{beforeAfterSlot}"
+                          ]
+                      },
+                      {
+                          "name": "timeSlot",
+                          "type": "AMAZON.TIME",
+                          "samples": [
+                              "{timeSlot}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "reschedule delivery of my order",
+                      "reschedule delivery of my order for",
+                      "reschedule delivery of my order for {nameSlot}",
+                      "reschedule delivery of my order {nameSlot}",
+                      "reschedule delivery of my order of {nameSlot}",
+                      "reschedule delivery of my order to {daySlot} {beforeAfterSlot} {timeSlot}",
+                      "reschedule the delivery of my order on {daySlot} {beforeAfterSlot} {timeSlot}",
+                      "reschedule the delivery for my order on {daySlot} {beforeAfterSlot} {timeSlot}",
+                      "reschedule delivery of my order on {daySlot} {beforeAfterSlot} {timeSlot}",
+                      "reschedule my order to {daySlot} {beforeAfterSlot} {timeSlot}"
+                  ]
+              },
+              {
+                  "name": "OrderActionsIntent",
+                  "slots": [
+                      {
+                          "name": "actionsSlot",
+                          "type": "Actions",
+                          "samples": [
+                              "{actionsSlot}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "{actionsSlot}"
+                  ]
+              },
+              {
+                  "name": "CancelOrderIntent",
+                  "slots": [
+                      {
+                          "name": "orderNameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "samples": [
+                              "{orderNameSlot} order",
+                              "{orderNameSlot}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "cancel my order",
+                      "cancel my order of {orderNameSlot}",
+                      "cancel my order for {orderNameSlot}"
+                  ]
+              }
+          ],
+          "types": [
+              {
+                  "name": "Status",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "closed",
+                              "synonyms": [
+                                  "finished",
+                                  "completed"
+                              ]
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "active",
+                              "synonyms": [
+                                  "in-progress",
+                                  "pending",
+                                  "open"
+                              ]
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "Confirm",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "no",
+                              "synonyms": [
+                                  "fine",
+                                  "nay",
+                                  "nops"
+                              ]
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "yes",
+                              "synonyms": [
+                                  "sure",
+                                  "ok"
+                              ]
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "BeforeAfter",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "after"
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "before"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "Actions",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "nothing",
+                              "synonyms": [
+                                  "do nothing"
+                              ]
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "cancel",
+                              "synonyms": [
+                                  "terminate",
+                                  "cancel order"
+                              ]
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "reschedule"
+                          }
+                      }
+                  ]
+              }
+          ]
+      },
+      "dialog": {
+          "intents": [
+              {
+                  "name": "OrderStatusIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "nameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.1290652576473.1367655314256"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "OrdersIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "statusSlot",
+                          "type": "Status",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.177788696064.1493902631420"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "AskForOrderStatusIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "confirmSlot",
+                          "type": "Confirm",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.449485013304.1327760301626"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "RescheduleOrderIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "nameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.441936289416.985619682638"
+                          }
+                      },
+                      {
+                          "name": "daySlot",
+                          "type": "AMAZON.DayOfWeek",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.1411888163623.1208011935119"
+                          }
+                      },
+                      {
+                          "name": "timeSlot",
+                          "type": "AMAZON.TIME",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.1411888163623.1207651543787"
+                          }
+                      },
+                      {
+                          "name": "beforeAfterSlot",
+                          "type": "BeforeAfter",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.441936289416.211743904983"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "OrderActionsIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "actionsSlot",
+                          "type": "Actions",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.384997483924.909471252812"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name": "CancelOrderIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "orderNameSlot",
+                          "type": "AMAZON.SearchQuery",
+                          "confirmationRequired": true,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "confirmation": "Confirm.Slot.536910068161.1235017969698",
+                              "elicitation": "Elicit.Slot.764213306486.1132945914115"
+                          }
+                      }
+                  ]
+              }
+          ],
+          "delegationStrategy": "ALWAYS"
+      },
+      "prompts": [
+          {
+              "id": "Elicit.Slot.1010439035096.65569959641",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which order?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.1503901289127.1393889503659",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which orders?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.177788696064.1493902631420",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which ones open or closed?"
+                  },
+                  {
+                      "type": "PlainText",
+                      "value": "which orders open or closed?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.1290652576473.1367655314256",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which one?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.449485013304.1327760301626",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Would you like to know the status of an open order?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.1411888163623.1207651543787",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "what time?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.1411888163623.1208011935119",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "when?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.441936289416.142843834910",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which order?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.441936289416.211743904983",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "befor or after?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.441936289416.985619682638",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which order?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.1027382844485.200709304428",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Would you like to reschedule the delivery for this order. You can say reschedule or cancel?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.220048692279.1157594828998",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Would you like to reschedule the delivery for this order. You can say reschedule or cancel?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.384997483924.909471252812",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.764213306486.856230032513",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which one?"
+                  }
+              ]
+          },
+          {
+              "id": "Elicit.Slot.764213306486.1132945914115",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "which one?"
+                  }
+              ]
+          },
+          {
+              "id": "Confirm.Slot.536910068161.1235017969698",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Are u sure you want to cancel this order?"
+                  }
+              ]
+          }
+      ]
+  }
+}
