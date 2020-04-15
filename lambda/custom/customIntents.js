@@ -69,7 +69,7 @@ module.exports = {
                         constants.APP_NAME,
                         orderList.join('\n'),
                         helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
-                    .reprompt("Would you like to know the status of any order?")
+                    .reprompt("Would you like to know the status of any open order?")
                     .getResponse();
             } catch (error) {
                 console.log(JSON.stringify(error));
@@ -129,15 +129,17 @@ module.exports = {
                 }
 
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
                 return responseBuilder
-                    .speak(say) // delegate to Alexa to collect all the required slots for next Intent
-                    .addDelegateDirective({
-                        name: 'OrderStatusIntent',
-                        confirmationStatus: 'NONE',
-                        slots: {}
-                    })
-                    .reprompt("Which order?")
-                    .getResponse();
+                .addDelegateDirective({
+                    name: 'OrderStatusIntent',
+                    confirmationStatus: 'NONE',
+                    slots: {}
+                })
+                .speak(say)
+                .reprompt("Which order?")
+                .getResponse();
+
             } else if ((slotValues.confirmSlot.ERstatus === 'ER_SUCCESS_NO_MATCH') || (!slotValues.confirmSlot.heardAs)) {
                 return responseBuilder
                     .speak("Would you like to know the status for any open order?")

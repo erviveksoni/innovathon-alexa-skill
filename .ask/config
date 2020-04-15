@@ -21,7 +21,7 @@
         },
         "interactionModel": {
           "en-US": {
-            "eTag": "5ee0077f280cec29f983c5abbb4ea60e"
+            "eTag": "9b008c4f7f6cafb0f44b1f90cbd36519"
           }
         },
         "lambda": [
@@ -34,7 +34,7 @@
             "codeUri": "lambda/custom",
             "functionName": "ask-otto-shopping-assistant-api",
             "handler": "index.handler",
-            "revisionId": "db73d0d5-a0ee-4c87-b547-109550e92bb3",
+            "revisionId": "7a2e8ef4-2a48-4183-9089-c490b68d3b8d",
             "runtime": "nodejs10.x"
           }
         ]

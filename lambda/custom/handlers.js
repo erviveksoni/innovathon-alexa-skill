@@ -22,7 +22,7 @@ module.exports = {
       console.log(`Error handled: ${JSON.stringify(error)}`);
 
       return handlerInput.responseBuilder
-        .speak(`Sorry, your skill got this error.  ${error.message} `)
+        .speak(`Sorry, I can't understand that. Please try again.`)
         .reprompt(`Sorry, your skill got this error.  ${error.message} `)
         .getResponse();
     }
