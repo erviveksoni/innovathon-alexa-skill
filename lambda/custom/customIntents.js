@@ -55,8 +55,8 @@ module.exports = {
                 }
 
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-                say = `Here are your ${status} orders`;
-                let orderList = `Apple IPhone\nBose Headphones`;
+                let orderList = ["Apple IPhone", "Bose Headphones"];
+                say = `Here are your ${status} orders: ${orderList.join(",")}`;
 
                 return responseBuilder
                     .addDelegateDirective({
@@ -67,7 +67,7 @@ module.exports = {
                     .speak(say)
                     .withStandardCard(
                         constants.APP_NAME,
-                        orderList,
+                        orderList.join('\n'),
                         helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
                     .reprompt("Would you like to know the status of any order?")
                     .getResponse();
@@ -189,16 +189,24 @@ module.exports = {
                     say = `Your order for ${name} is getting dispatched`;
                 }
 
+                let cardText = `Order: ${name}`;
+                let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                
                 sessionAttributes['OrderName'] = name;
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
                 return responseBuilder
-                    .speak(say)
                     .addDelegateDirective({
                         name: 'OrderActionsIntent',
                         confirmationStatus: 'NONE',
                         slots: {}
                     })
+                    .speak(say)
+                    .withStandardCard(
+                        constants.APP_NAME,
+                        cardText,
+                        smallImageUrl, largeImageUrl)
                     .reprompt("Would you like to reschedule or cancel this order?")
                     .getResponse();
             } else if (!slotValues.nameSlot.heardAs) {
