@@ -1,72 +1,89 @@
 {
   "manifest": {
-    "apis": {
-      "custom": {
-        "endpoint": {
-          "uri": "arn:aws:lambda:us-east-2:087006985831:function:OttoLambda"
-        },
-        "interfaces": [
-          {
-            "type": "CAN_FULFILL_INTENT_REQUEST"
-          }
-        ]
-      }
-    },
-    "manifestVersion": "1.0",
-    "permissions": [
-      {
-        "name": "alexa::devices:all:address:full:read"
-      },
-      {
-        "name": "alexa::profile:name:read"
-      },
-      {
-        "name": "alexa::profile:email:read"
-      },
-      {
-        "name": "alexa::profile:mobile_number:read"
-      },
-      {
-        "name": "alexa::household:lists:read"
-      },
-      {
-        "name": "alexa::household:lists:write"
-      }
-    ],
-    "privacyAndCompliance": {
-      "locales": {
-        "en-US": {
-          "privacyPolicyUrl": "http://example.com/privacy",
-          "termsOfUseUrl": "http://example.com/terms"
-        }
-      },
-      "allowsPurchases": false,
-      "usesPersonalInfo": true,
-      "isChildDirected": false,
-      "isExportCompliant": true,
-      "containsAds": false
-    },
     "publishingInformation": {
       "locales": {
         "en-US": {
-          "name": "Otto Self Care",
+          "name": "Otto Shopping Assistant",
           "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/fd44/2bb5a7bf281a462f81beb74977760b67/APP_ICON?versionId=pfEws_ZhwNSaVW9rFQBJaRY3JN3QOof0&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20200414T153729Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QDXWFVRR3%2F20200414%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=986e52512d60bc663e94f9fe3c8060648c8b79ae1fac22b96c9c69cec264a5f6",
           "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/1cb3/92aff3277edb4347a8cb6e2c254c0c59/APP_ICON_LARGE?versionId=s8vqemVMF5E5W9ubGJG3ufeNRHcBuA7t&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20200414T153729Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=AKIAWBV6LQ4QDXWFVRR3%2F20200414%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=86644efec6c1b3d94f6145a61415053c073e1d0ee2ebd394df86525c4c5b6fbb",
           "summary": "App developed for innovathon demo",
           "description": "Demonstrating a concept to facilitate end users with voice based interactions capability on their shopping portal.",
           "examplePhrases": [
             "Alexa open otto app",
-            "Alexa ask otto app to show my orders"
+            "Alexa ask otto app to show my open orders"
           ],
           "keywords": []
         }
       },
-      "isAvailableWorldwide": false,
-      "testingInstructions": "As of now in beta",
+      "isAvailableWorldwide": true,
+      "testingInstructions": "For testing only",
       "category": "SHOPPING",
       "distributionCountries": [
         "US"
       ]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": "lambda/custom"
+        }
+      }
+    },
+    "permissions": [
+      {
+        "name": "alexa::devices:all:notifications:write"
+      },
+      {
+        "name": "alexa::profile:name:read"
+      },
+      {
+        "name": "alexa::profile:email:read"
+      }
+    ],
+    "events": {
+      "publications": [
+        {
+          "eventName": "AMAZON.OrderStatus.Updated"
+        },
+        {
+          "eventName": "AMAZON.MessageAlert.Activated"
+        },
+        {
+          "eventName": "AMAZON.TrashCollectionAlert.Activated"
+        },
+        {
+          "eventName": "AMAZON.WeatherAlert.Activated"
+        }
+      ],
+      "endpoint": {
+        "uri": "arn:aws:lambda:us-east-1:087006985831:function:ask-otto-shopping-assistant-api"
+      },
+      "subscriptions": [
+        {
+          "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
+        }
+      ],
+      "regions": {
+        "NA": {
+          "endpoint": {
+            "uri": "arn:aws:lambda:us-east-1:087006985831:function:ask-otto-shopping-assistant-api"
+          }
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "en-US": {
+          "termsOfUseUrl": "http://privacy.com/terms",
+          "privacyPolicyUrl": "http://privacy.com/privacy"
+        }
+      },
+      "isExportCompliant": true,
+      "containsAds": false,
+      "isChildDirected": false,
+      "usesPersonalInfo": true
     }
   }
 }

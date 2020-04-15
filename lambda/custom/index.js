@@ -10,7 +10,6 @@ const constants = require('./constants');
 const Alexa = require("ask-sdk-core");
 
 // Internal Intent Handlers =============================================
-
 const LaunchRequest_Handler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -53,6 +52,7 @@ const LaunchRequest_Handler = {
 const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
+    LaunchRequest_Handler,
     systemIntents.AMAZON_CancelIntent_Handler,
     systemIntents.AMAZON_HelpIntent_Handler,
     systemIntents.AMAZON_StopIntent_Handler,
@@ -63,14 +63,14 @@ exports.handler = skillBuilder
     customIntents.OrderActionsIntentHandler,
     customIntents.CancelOrderIntentHandler,
     customIntents.RescheduleOrderIntentHandler,
-    LaunchRequest_Handler,
+    handlers.ProactiveEventHandler,
     handlers.SessionEndedHandler
   )
   .addRequestInterceptors(interceptors.RequestLog)
   .addResponseInterceptors(interceptors.ResponseLog)
+  // .addRequestInterceptors(interceptors.InitMemoryAttributesInterceptor)
+  // .addRequestInterceptors(interceptors.RequestHistoryInterceptor)
   .addErrorHandlers(handlers.ErrorHandler)
-  .addRequestInterceptors(interceptors.InitMemoryAttributesInterceptor)
-  .addRequestInterceptors(interceptors.RequestHistoryInterceptor)
   .withApiClient(new Alexa.DefaultApiClient())
   .lambda();
 

@@ -1,7 +1,7 @@
 {
   "interactionModel": {
       "languageModel": {
-          "invocationName": "otto app",
+          "invocationName": "shopping assistant",
           "modelConfiguration": {
               "fallbackIntentSensitivity": {
                   "level": "LOW"
