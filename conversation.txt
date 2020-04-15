@@ -1,0 +1,75 @@
+User: open otto app
+
+Alexa: Hello and welcome to Otto Store ! How can I help You today ?.
+
+User: show orders
+
+Alexa: which orders open or closed?
+
+User: open
+
+Alexa: Here are your active orders
+
+Alexa: Would you like to know the status of an open order?
+
+User: yes
+
+Alexa: Sure..
+
+Alexa: which one?
+
+User: status of apple iphone
+
+Alexa: Your order for apple iPhone is getting dispatched
+
+Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
+
+User: reschedule
+
+Alexa: Sure, rescheduling your order for apple iPhone
+
+Alex: when?
+
+User: weekend
+
+Alexa: what time?
+
+User: 6 pm
+
+Alexa: befor or after?
+
+User: after
+
+Alexa: We have rescheduled your order for apple iPhone on weekend after 18:00
+
+Alexa: Would you like to know the status of an open order?
+
+User: yes
+
+Alexa: Sure..
+
+Alexa: which one?
+
+User: status of iphone
+
+Alexa: Your order for iPhone is getting dispatched
+
+Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
+
+User: cancel
+
+Alexa: Okay!
+
+Alexa: Are u sure you want to cancel this order?
+
+User: yes
+
+Alexa: Cancelled your order for iPhone
+
+Alexa: Would you like to know the status of an open order?
+
+Alexa: Would you like to know the status of any other order?
+
+User: no
+
+Alexa: Okay, have a nice day!
