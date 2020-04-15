@@ -41,7 +41,7 @@ module.exports = {
         console.log("Permissions" + JSON.stringify(handlerInput.requestEnvelope.request.body.subscriptions));
       }
       catch (error) {
-        console.error("Error: " + JSON.stringify(error));
+        console.error("Error: ProactiveEventHandler Not Enabled By User " + JSON.stringify(error));
       }
     },
   }
