@@ -2,24 +2,25 @@
 Alexa skill developed for innovathon
 
 
-# Commands:
+# Alexa Commands:
 
-### Invoke:
+## Invoke:
 **User**: Alexa open `{invocation name}`
 
 **Alexa**: Hello `user` and welcome to Store ! How can I help You today ?.
 
-**Alexa**: Would you like to know the status of an open order?
 
-**User**: No
-
-### Show orders:
+## Show orders:
 
 **User**: Alexa ask `{invocation name}` to show my `{open/closed}` orders
 
 **Alexa**: Here are your `{active}` orders: `{Apple IPhone,Bose Headphones}`
 
-### Order status:
+**Alexa**: Would you like to know the status of an open order?
+
+**User**: No
+
+## Order status:
 **User**: Alexa ask `{invocation name}` the status of my `{apple iphone}`
 
 **Alexa**: Your order for `{apple iPhone}` is `{getting dispatched}`
@@ -28,7 +29,7 @@ Alexa skill developed for innovathon
 
 **User**: Do nothing
 
-### Reschedule order:
+## Reschedule order:
 **User**: Alexa ask `{invocation name}` to reschedule delivery of my `{apple iphone}`
 
 **Alexa**: when?
@@ -37,8 +38,7 @@ Alexa skill developed for innovathon
 
 **Alexa**: We have rescheduled your order for apple iPhone on 2020-04-21 after 20:00
 
-### Cancel order:
-
+## Cancel order:
 **User**: Alexa ask `{invocation name}` to cancel the order of my `{apple iphone}`
 
 **Alexa**: Are u sure you want to cancel this order?
