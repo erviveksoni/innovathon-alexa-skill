@@ -1,6 +1,6 @@
 const constants = require('./constants');
 const helper = require('./helper');
-const dbService = required('./dbservice');
+const dbService = require('./dbservice');
 
 module.exports = {
     // Custom Intent Implementation ===================================================
