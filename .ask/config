@@ -1,44 +1,20 @@
 {
   "deploy_settings": {
     "default": {
-      "skill_id": "amzn1.ask.skill.1c03982b-8e98-4b5a-98fc-a175fd67c3f8",
+      "skill_id": "",
       "was_cloned": false,
       "merge": {
         "manifest": {
           "apis": {
             "custom": {
               "endpoint": {
-                "uri": "arn:aws:lambda:us-east-1:087006985831:function:ask-otto-shopping-assistant-api"
+                "uri": "ask-otto-shopping-assistant-api"
               }
             }
           }
         }
       },
-      "in_skill_products": [],
-      "resources": {
-        "manifest": {
-          "eTag": "1be48a377f4b66804d67487b8573f61a"
-        },
-        "interactionModel": {
-          "en-US": {
-            "eTag": "8bfe066eba21392b2acbec0aa2016ef2"
-          }
-        },
-        "lambda": [
-          {
-            "alexaUsage": [
-              "custom/default"
-            ],
-            "arn": "arn:aws:lambda:us-east-1:087006985831:function:ask-otto-shopping-assistant-api",
-            "awsRegion": "us-east-1",
-            "codeUri": "lambda/custom",
-            "functionName": "ask-otto-shopping-assistant-api",
-            "handler": "index.handler",
-            "revisionId": "5ea68ec7-f39a-43a0-a8fb-fe66ca0102bc",
-            "runtime": "nodejs10.x"
-          }
-        ]
-      }
+      "in_skill_products": []
     }
   }
 }
