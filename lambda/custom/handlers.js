@@ -24,6 +24,7 @@ module.exports = {
       return handlerInput.responseBuilder
         .speak(`Sorry, I can't understand that. Please try again.`)
         .reprompt(`Sorry, your skill got this error.  ${error.message} `)
+        .withShouldEndSession(true)
         .getResponse();
     }
   },

@@ -53,16 +53,16 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequest_Handler,
-    systemIntents.AMAZON_CancelIntent_Handler,
-    systemIntents.AMAZON_HelpIntent_Handler,
-    systemIntents.AMAZON_StopIntent_Handler,
-    systemIntents.AMAZON_NavigateHomeIntent_Handler,
     customIntents.OrdersIntentHandler,
     customIntents.OrderStatusIntentHandler,
     customIntents.AskForOrderStatusIntentHandler,
     customIntents.OrderActionsIntentHandler,
-    customIntents.CancelOrderIntentHandler,
     customIntents.RescheduleOrderIntentHandler,
+    customIntents.CancelOrderIntentHandler,
+    systemIntents.AMAZON_CancelIntent_Handler,
+    systemIntents.AMAZON_HelpIntent_Handler,
+    systemIntents.AMAZON_StopIntent_Handler,
+    systemIntents.AMAZON_NavigateHomeIntent_Handler,
     handlers.ProactiveEventHandler,
     handlers.SessionEndedHandler
   )
