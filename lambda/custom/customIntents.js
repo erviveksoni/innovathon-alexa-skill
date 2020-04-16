@@ -13,7 +13,7 @@ module.exports = {
         async handle(handlerInput) {
             // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             console.log("Orders Intent Handler Entry");
-            const {serviceClientFactory, responseBuilder, requestEnvelope} = handlerInput;
+            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -39,12 +39,9 @@ module.exports = {
                 }
 
                 let say = 'Okay !';
-
-                let slotStatus = '';
-                let resolvedSlot;
-
                 let slotValues = helper.getSlotValues(request.intent.slots);
                 let status = '';
+
                 if (slotValues.statusSlot.ERstatus === 'ER_SUCCESS_MATCH') {
                     status = slotValues.statusSlot.resolved;
                     sessionAttributes['Status'] = status;
@@ -60,22 +57,32 @@ module.exports = {
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
                 let orderList = await dbService.getOrdersWithStatus(profileEmail, status);
-                let orderTitles = orderList.map(order =>  order.productTitle)
-                say = `Here are your ${status} orders: ${orderTitles.join(",")}`;
-                console.log(say);
-                return responseBuilder
-                    .addDelegateDirective({
-                        name: 'AskForOrderStatusIntent',
-                        confirmationStatus: 'NONE',
-                        slots: {}
-                    })
-                    .speak(say)
-                    .withStandardCard(
-                        constants.APP_NAME,
-                        orderTitles.join('\n'),
-                        helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
-                    .reprompt("Would you like to know the status of any open order?")
-                    .getResponse();
+                if (orderList && orderList.length > 0) {
+
+                    let orderTitles = orderList.map(order => order.productTitle)
+                    say = `Here are your ${status} orders: ${orderTitles.join(",")}`;
+
+                    return responseBuilder
+                        .addDelegateDirective({
+                            name: 'AskForOrderStatusIntent',
+                            confirmationStatus: 'NONE',
+                            slots: {}
+                        })
+                        .speak(say)
+                        .withStandardCard(
+                            constants.APP_NAME,
+                            orderTitles.join('\n'),
+                            helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
+                        .reprompt("Would you like to know the status of any open order?")
+                        .getResponse();
+                } else {
+                    let text = `Sorry, I could not find any ${status} orders.`;
+                    return responseBuilder
+                        .speak(text)
+                        .withSimpleCard(constants.APP_NAME, text)
+                        .withShouldEndSession(true)
+                        .getResponse();
+                }
             } catch (error) {
                 // logger.error(file, handlerInput.requestEnvelope.request.intent.name, error.messages);
                 console.log("inside catch block", error);
@@ -111,10 +118,6 @@ module.exports = {
 
             }
             let say = '';
-
-            let slotStatus = '';
-            let resolvedSlot;
-
             let slotValues = helper.getSlotValues(request.intent.slots);
 
             //   SLOT: confirmSlot 
@@ -161,70 +164,96 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'OrderStatusIntent';
         },
         async handle(handlerInput) {
-            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
-            console.log("OrderStatusIntentHandler Entry");
-            const request = handlerInput.requestEnvelope.request;
-            const responseBuilder = handlerInput.responseBuilder;
-            let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+            const { serviceClientFactory, responseBuilder } = handlerInput;
 
-            // delegate to Alexa to collect all the required slots
-            const currentIntent = request.intent;
-            if (request.dialogState && request.dialogState !== 'COMPLETED') {
-                return handlerInput.responseBuilder
-                    .addDelegateDirective(currentIntent)
-                    .getResponse();
-            }
+            try {
+                const upsServiceClient = serviceClientFactory.getUpsServiceClient();
+                const profileEmail = await upsServiceClient.getProfileEmail();
 
-            let say = '';
-
-            let slotStatus = '';
-            let resolvedSlot;
-
-            let slotValues = helper.getSlotValues(request.intent.slots);
-            // helper.getSlotValues returns .heardAs, .resolved, and .isValidated for each slot, according to request slot status codes ER_SUCCESS_MATCH, ER_SUCCESS_NO_MATCH, or traditional simple request slot without resolutions
-
-            //   SLOT: snackSlot
-            if (slotValues.nameSlot.heardAs) {
-
-                let name = slotValues.nameSlot.heardAs;
-                if (name === "nothing") {
-                    say = `Okay, have a nice day!`;
+                if (!profileEmail) {
+                    const noEmailResponse = `It looks like you don\'t have an email set. You can set your email from the companion app.`
                     return responseBuilder
-                        .speak(say)
-                        .withShouldEndSession(true)
+                        .speak(noEmailResponse)
+                        .withSimpleCard(constants.APP_NAME, noEmailResponse)
                         .getResponse();
                 }
-                let profileEmail = sessionAttributes["profileEmail"];
-                let orders = await dbService.getOrdersForProductTitle(profileEmail, name);
-                sessionAttributes['order'] = orders[0];
-                say = `Status of your order for ${orders[0].productTitle} is ${orders[0].status}`;
 
+                console.log("OrderStatusIntentHandler Entry");
+                const request = handlerInput.requestEnvelope.request;
+                const responseBuilder = handlerInput.responseBuilder;
+                let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-                let cardText = `Order: ${name}`;
-                let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
-                let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                // delegate to Alexa to collect all the required slots
+                const currentIntent = request.intent;
+                if (request.dialogState && request.dialogState !== 'COMPLETED') {
+                    return handlerInput.responseBuilder
+                        .addDelegateDirective(currentIntent)
+                        .getResponse();
+                }
 
-                sessionAttributes['OrderName'] = name;
-                handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+                let say = '';
+                let slotValues = helper.getSlotValues(request.intent.slots);
 
-                return responseBuilder
-                    .addDelegateDirective({
-                        name: 'OrderActionsIntent',
-                        confirmationStatus: 'NONE',
-                        slots: {}
-                    })
-                    .speak(say)
-                    .withStandardCard(
-                        constants.APP_NAME,
-                        cardText,
-                        smallImageUrl, largeImageUrl)
-                    .reprompt("Would you like to reschedule or cancel this order?")
-                    .getResponse();
-            } else if (!slotValues.nameSlot.heardAs) {
-                return responseBuilder
-                    .speak("Can you tell me the name of the order?")
-                    .reprompt("What's the name of the order?")
-                    .getResponse();
+                //   SLOT: snackSlot
+                if (slotValues.nameSlot.heardAs) {
+
+                    let name = slotValues.nameSlot.heardAs;
+                    if (name === "nothing") {
+                        say = `Okay, have a nice day!`;
+                        return responseBuilder
+                            .speak(say)
+                            .withShouldEndSession(true)
+                            .getResponse();
+                    }
+
+                    let orders = await dbService.getOrdersForProductTitle(profileEmail, name.toLowerCase());
+                    if (orders && orders.length > 0) {
+
+                        sessionAttributes['order'] = orders[0];
+                        say = `Status of your order for ${orders[0].productTitle} is: ${orders[0].order_state.replace("_", " ")}`;
+                        let cardText = say;
+
+                        sessionAttributes['OrderName'] = name;
+                        handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+                        return responseBuilder
+                            .addDelegateDirective({
+                                name: 'OrderActionsIntent',
+                                confirmationStatus: 'NONE',
+                                slots: {}
+                            })
+                            .speak(say)
+                            .withSimpleCard(
+                                constants.APP_NAME,
+                                cardText)
+                            .reprompt("Would you like to reschedule or cancel this order?")
+                            .getResponse();
+                    } else {
+                        let text = `Sorry, I could not find any order for ${name}.`;
+                        return responseBuilder
+                            .speak(text)
+                            .withSimpleCard(constants.APP_NAME, text)
+                            .withShouldEndSession(true)
+                            .getResponse();
+                    }
+                } else if (!slotValues.nameSlot.heardAs) {
+                    return responseBuilder
+                        .speak("Can you tell me the name of the order?")
+                        .reprompt("What's the name of the order?")
+                        .getResponse();
+                }
+
+            } catch (error) {
+                // logger.error(file, handlerInput.requestEnvelope.request.intent.name, error.messages);
+                console.log("inside catch block", error);
+                if (error.statusCode == 403) {
+                    return responseBuilder
+                        .speak(constants.messages.NOTIFY_MISSING_PERMISSIONS)
+                        .withAskForPermissionsConsentCard([constants.EMAIL_PERMISSION])
+                        .getResponse();
+                }
+                const response = responseBuilder.speak(constants.messages.ERROR).getResponse();
+                return response;
             }
         }
     },
@@ -249,9 +278,6 @@ module.exports = {
 
             }
             let say = '';
-
-            let slotStatus = '';
-            let resolvedSlot;
 
             let slotValues = helper.getSlotValues(request.intent.slots);
 
@@ -418,54 +444,86 @@ module.exports = {
             const request = handlerInput.requestEnvelope.request;
             return request.type === 'IntentRequest' && request.intent.name === 'CancelOrderIntent';
         },
-        handle(handlerInput) {
-            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
-            const request = handlerInput.requestEnvelope.request;
-            const responseBuilder = handlerInput.responseBuilder;
-            let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+        async handle(handlerInput) {
+            const { serviceClientFactory, responseBuilder } = handlerInput;
+            try {
+                const upsServiceClient = serviceClientFactory.getUpsServiceClient();
+                const profileEmail = await upsServiceClient.getProfileEmail();
 
-            // delegate to Alexa to collect all the required slots
-            const currentIntent = request.intent;
-            if (request.dialogState && request.dialogState !== 'COMPLETED') {
-                return handlerInput.responseBuilder
-                    .addDelegateDirective(currentIntent)
-                    .getResponse();
-            }
-            let say = '';
-
-            let slotStatus = '';
-            let resolvedSlot;
-
-            let slotValues = helper.getSlotValues(request.intent.slots);
-            // getSlotValues returns .heardAs, .resolved, and .isValidated for each slot, according to request slot status codes ER_SUCCESS_MATCH, ER_SUCCESS_NO_MATCH, or traditional simple request slot without resolutions
-
-            //   SLOT: nameSlot
-            let name = '';
-            if (slotValues.orderNameSlot.heardAs) {
-                name = slotValues.orderNameSlot.heardAs;
-                if (name === "nothing") {
-                    say = `Okay, have a nice day!`;
+                if (!profileEmail) {
+                    const noEmailResponse = `It looks like you don\'t have an email set. You can set your email from the companion app.`
                     return responseBuilder
-                        .speak(say)
+                        .speak(noEmailResponse)
+                        .withSimpleCard(constants.APP_NAME, noEmailResponse)
+                        .getResponse();
+                }
+
+                const request = handlerInput.requestEnvelope.request;
+                const responseBuilder = handlerInput.responseBuilder;
+                let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+                // delegate to Alexa to collect all the required slots
+                const currentIntent = request.intent;
+                if (request.dialogState && request.dialogState !== 'COMPLETED') {
+                    return handlerInput.responseBuilder
+                        .addDelegateDirective(currentIntent)
+                        .getResponse();
+                }
+
+                let say = '';
+                let slotValues = helper.getSlotValues(request.intent.slots);
+
+                //   SLOT: nameSlot
+                let name = '';
+                if (slotValues.orderNameSlot.heardAs) {
+                    name = slotValues.orderNameSlot.heardAs;
+                    if (name === "nothing") {
+                        say = `Okay, have a nice day!`;
+                        return responseBuilder
+                            .speak(say)
+                            .withShouldEndSession(true)
+                            .getResponse();
+                    }
+                } else if (!slotValues.orderNameSlot.heardAs) {
+                    return responseBuilder
+                        .speak("Can you tell me the name of the order?")
+                        .reprompt("What's the name of the order?")
+                        .getResponse();
+                }
+
+                let orders = await dbService.getOrdersForProductTitle(profileEmail, name.toLowerCase(), "open");
+                if (orders && orders.length > 0) {
+
+                    let statusPromise = await dbService.cancelOrder(orders[0]);
+                    say = `Cancelled your order for ${name}. Have a nice day!`;
+                    sessionAttributes['OrderName'] = '';
+                    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+                    return responseBuilder
+                        .speak(say) // delegate to Alexa to collect all the required slots for next Intent
+                        .withShouldEndSession(true)
+                        .getResponse();
+                } else {
+
+                    let text = `Sorry, I could not find any open order for ${name}.`;
+                    return responseBuilder
+                        .speak(text)
+                        .withSimpleCard(constants.APP_NAME, text)
                         .withShouldEndSession(true)
                         .getResponse();
                 }
-            } else if (!slotValues.orderNameSlot.heardAs) {
-                return responseBuilder
-                    .speak("Can you tell me the name of the order?")
-                    .reprompt("What's the name of the order?")
-                    .getResponse();
+            } catch (error) {
+                // logger.error(file, handlerInput.requestEnvelope.request.intent.name, error.messages);
+                console.log("inside catch block", error);
+                if (error.statusCode == 403) {
+                    return responseBuilder
+                        .speak(constants.messages.NOTIFY_MISSING_PERMISSIONS)
+                        .withAskForPermissionsConsentCard([constants.EMAIL_PERMISSION])
+                        .getResponse();
+                }
+                const response = responseBuilder.speak(constants.messages.ERROR).getResponse();
+                return response;
             }
-            let order = sessionAttributes['order'];
-            let statusPromise = dbService.cancelOrder(order);
-            //TODO need to handle promise
-            say = `Cancelled your order for ${name}. Have a nice day!`;
-            sessionAttributes['OrderName'] = '';
-            handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-            return responseBuilder
-                .speak(say) // delegate to Alexa to collect all the required slots for next Intent
-                .withShouldEndSession(true)
-                .getResponse();
         }
     }
 }
