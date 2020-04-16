@@ -53,7 +53,7 @@ module.exports = {
         })
     },
 
-    cancelOrderWithProductTitle: function (order) {
+    cancelOrder: function (order) {
         AWS.config.update({
             region: region,
             endpoint: endPoint
