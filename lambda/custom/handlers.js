@@ -30,7 +30,7 @@ module.exports = {
 
   ProactiveEventHandler: {
     canHandle(handlerInput) {
-      console.log(JSON.stringify(handlerInput));
+      console.log("Proactive Handler --------- ",JSON.stringify(handlerInput));
       const request = handlerInput.requestEnvelope.request;
       return request.type === 'AlexaSkillEvent.ProactiveSubscriptionChanged';
     },
