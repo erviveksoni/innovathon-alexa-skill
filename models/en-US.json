@@ -44,6 +44,8 @@
                         }
                     ],
                     "samples": [
+                        "the status of my {nameSlot}",
+                        "the staus of my {nameSlot}",
                         "of {nameSlot}",
                         "for {nameSlot}",
                         "status for my order",
@@ -105,14 +107,14 @@
                             "name": "nameSlot",
                             "type": "AMAZON.SearchQuery",
                             "samples": [
-                                "my order {nameSlot}",
                                 "{nameSlot}"
                             ]
                         },
                         {
                             "name": "daySlot",
-                            "type": "AMAZON.DayOfWeek",
+                            "type": "AMAZON.DATE",
                             "samples": [
+                                "{daySlot} {beforeAfterSlot} {timeSlot}",
                                 "{daySlot}"
                             ]
                         },
@@ -120,6 +122,7 @@
                             "name": "beforeAfterSlot",
                             "type": "BeforeAfter",
                             "samples": [
+                                "{daySlot} {beforeAfterSlot} {timeSlot}",
                                 "{beforeAfterSlot}"
                             ]
                         },
@@ -132,16 +135,16 @@
                         }
                     ],
                     "samples": [
-                        "reschedule delivery of my order",
-                        "reschedule delivery of my order for",
-                        "reschedule delivery of my order for {nameSlot}",
-                        "reschedule delivery of my order {nameSlot}",
-                        "reschedule delivery of my order of {nameSlot}",
-                        "reschedule delivery of my order to {daySlot} {beforeAfterSlot} {timeSlot}",
-                        "reschedule the delivery of my order on {daySlot} {beforeAfterSlot} {timeSlot}",
-                        "reschedule the delivery for my order on {daySlot} {beforeAfterSlot} {timeSlot}",
-                        "reschedule delivery of my order on {daySlot} {beforeAfterSlot} {timeSlot}",
-                        "reschedule my order to {daySlot} {beforeAfterSlot} {timeSlot}"
+                        "to reschedule delivery of my order for {nameSlot}",
+                        "to re schedule delivery of my order for {nameSlot}",
+                        "reshedule delivery of my {nameSlot}",
+                        "re schedule delivery of my {nameSlot}",
+                        "to re schedule delivery of my {nameSlot}",
+                        "to reshedule delivery of my {nameSlot}",
+                        "to reschedule delivery of my {nameSlot}",
+                        "to reschedule my order",
+                        "to reschedule my order of {nameSlot}",
+                        "to reschedule my order for {nameSlot}"
                     ]
                 },
                 {
@@ -172,7 +175,10 @@
                         }
                     ],
                     "samples": [
-                        "cancel my order",
+                        "cancel the order of my {orderNameSlot}",
+                        " to cancel the order of my {orderNameSlot}",
+                        "cancel my order for",
+                        "cancel my order of",
                         "cancel my order of {orderNameSlot}",
                         "cancel my order for {orderNameSlot}"
                     ]
@@ -337,7 +343,7 @@
                         },
                         {
                             "name": "daySlot",
-                            "type": "AMAZON.DayOfWeek",
+                            "type": "AMAZON.DATE",
                             "confirmationRequired": false,
                             "elicitationRequired": true,
                             "prompts": {
@@ -462,6 +468,10 @@
             {
                 "id": "Elicit.Slot.1411888163623.1208011935119",
                 "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "to?"
+                    },
                     {
                         "type": "PlainText",
                         "value": "when?"

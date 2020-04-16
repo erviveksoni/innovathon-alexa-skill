@@ -252,19 +252,14 @@ module.exports = {
                 sessionAttributes['OrderAction'] = actions;
 
                 if (actions === "nothing" || actions === "do nothing") {
-                    say = `Okay!`;
+                    say = `Okay! Have a nice day!`;
 
                     sessionAttributes['OrderName'] = '';
                     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
                     return responseBuilder
                         .speak(say)
-                        .addDelegateDirective({
-                            name: 'AskForOrderStatusIntent',
-                            confirmationStatus: 'NONE',
-                            slots: {}
-                        })
-                        .reprompt("Would you like to know the status of any other order?")
+                        .withShouldEndSession(true)
                         .getResponse();
 
                 } else if (actions === "cancel") {
@@ -397,18 +392,13 @@ module.exports = {
                     .getResponse();
             }
 
-            say = `We have rescheduled your order for ${name} on ${day} ${beforeAfter} ${deliveryTime} `;
+            say = `We have rescheduled your order for ${name} on ${day} ${beforeAfter} ${deliveryTime}. Have a nice day!`;
             console.log(say);
 
             handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
             return responseBuilder
                 .speak(say) // delegate to Alexa to collect all the required slots for next Intent
-                .addDelegateDirective({
-                    name: 'AskForOrderStatusIntent',
-                    confirmationStatus: 'NONE',
-                    slots: {}
-                })
-                .reprompt("Would you like to know the status of any order?")
+                .withShouldEndSession(true)
                 .getResponse();
         }
     },
@@ -457,17 +447,12 @@ module.exports = {
                     .getResponse();
             }
 
-            say = `Cancelled your order for ${name} `;
+            say = `Cancelled your order for ${name}. Have a nice day!`;
             sessionAttributes['OrderName'] = '';
             handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
             return responseBuilder
                 .speak(say) // delegate to Alexa to collect all the required slots for next Intent
-                .addDelegateDirective({
-                    name: 'AskForOrderStatusIntent',
-                    confirmationStatus: 'NONE',
-                    slots: {}
-                })
-                .reprompt("Would you like to know the status of any other order?")
+                .withShouldEndSession(true)
                 .getResponse();
         }
     }

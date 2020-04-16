@@ -1,75 +1,80 @@
-User: open otto app
+Scenario 1:
 
-Alexa: Hello and welcome to Otto Store ! How can I help You today ?.
+    User: open otto app
 
-User: show orders
+    Alexa: Hello and welcome to Otto Store ! How can I help You today ?.
 
-Alexa: which orders open or closed?
+    User: show orders
 
-User: open
+    Alexa: which orders open or closed?
 
-Alexa: Here are your active orders
+    User: open
 
-Alexa: Would you like to know the status of an open order?
+    Alexa: Here are your active orders
 
-User: yes
+    Alexa: Would you like to know the status of an open order?
 
-Alexa: Sure..
+    User: yes
 
-Alexa: which one?
+    Alexa: Sure..
 
-User: status of apple iphone
+    Alexa: which one?
 
-Alexa: Your order for apple iPhone is getting dispatched
+    User: status of apple iphone
 
-Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
+    Alexa: Your order for apple iPhone is getting dispatched
 
-User: reschedule
+    Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
 
-Alexa: Sure, rescheduling your order for apple iPhone
+    User: reschedule
 
-Alex: when?
+    Alexa: Sure, rescheduling your order for apple iPhone
 
-User: weekend
+    Alex: when?
 
-Alexa: what time?
+    User: weekend
 
-User: 6 pm
+    Alexa: what time?
 
-Alexa: befor or after?
+    User: 6 pm
 
-User: after
+    Alexa: befor or after?
 
-Alexa: We have rescheduled your order for apple iPhone on weekend after 18:00
+    User: after
 
-Alexa: Would you like to know the status of an open order?
+    Alexa: We have rescheduled your order for apple iPhone on weekend after 18:00
 
-User: yes
+    Alexa: Would you like to know the status of an open order?
 
-Alexa: Sure..
+    User: yes
 
-Alexa: which one?
+    Alexa: Sure..
 
-User: status of iphone
+    Alexa: which one?
 
-Alexa: Your order for iPhone is getting dispatched
+    User: status of iphone
 
-Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
+    Alexa: Your order for iPhone is getting dispatched
 
-User: cancel
+    Alexa: Would you like to reschedule or cancel this order. You can say reschedule or cancel or do nothing?
 
-Alexa: Okay!
+    User: cancel
 
-Alexa: Are u sure you want to cancel this order?
+    Alexa: Okay!
 
-User: yes
+    Alexa: Are u sure you want to cancel this order?
 
-Alexa: Cancelled your order for iPhone
+    User: yes
 
-Alexa: Would you like to know the status of an open order?
+    Alexa: Cancelled your order for iPhone
 
-Alexa: Would you like to know the status of any other order?
+    Alexa: Would you like to know the status of an open order?
 
-User: no
+    Alexa: Would you like to know the status of any other order?
 
-Alexa: Okay, have a nice day!
+    User: no
+
+    Alexa: Okay, have a nice day!
+    
+
+
