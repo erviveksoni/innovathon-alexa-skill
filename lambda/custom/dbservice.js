@@ -3,7 +3,6 @@ const region = "us-east-1";
 const endPoint = "https://dynamodb.us-east-1.amazonaws.com";
 const orderTableName = "order_details";
 module.exports = {
-
     getOrdersWithStatus: function (emailId, status) {
 
         AWS.config.update({
@@ -49,6 +48,71 @@ module.exports = {
                     reject(JSON.stringify(err, null, 2));
                 } else {
                     resolve(data.Items);
+                }
+            })
+        })
+    },
+
+    cancelOrderWithProductTitle: function (order) {
+        AWS.config.update({
+            region: region,
+            endpoint: endPoint
+        });
+
+        let docClient = new AWS.DynamoDB.DocumentClient();
+        let params = {
+            TableName: orderTableName,
+            Key: {
+                "customerId": order.customerId,
+                "orderId": order.orderId
+            },
+            KeyConditionExpression: "customerId = :email",
+            FilterExpression: "contains(productTitle, :title)",
+            UpdateExpression: "set #orderstatus = :newStatus",
+            ExpressionAttributeNames: {"#orderstatus": "status"},
+            ExpressionAttributeValues: {":newStatus": "cancel"},
+            ReturnValues: "UPDATED_NEW"
+        };
+
+        return new Promise(function (resolve, reject) {
+            docClient.update(params, function (err, data) {
+                if (err) {
+                    reject(JSON.stringify(err, null, 2));
+                } else {
+                    resolve(data);
+                }
+            })
+        })
+    },
+
+
+    rescheduleOrderWithProductTitle: function (order, deliveryInfo) {
+        AWS.config.update({
+            region: region,
+            endpoint: endPoint
+        });
+
+        let docClient = new AWS.DynamoDB.DocumentClient();
+        let params = {
+            TableName: orderTableName,
+            Key: {
+                "customerId": order.customerId,
+                "orderId": order.orderId
+            },
+            KeyConditionExpression: "customerId = :email",
+            FilterExpression: "contains(productTitle, :title)",
+            UpdateExpression: "set #delInfo = :dInfoVal",
+            ExpressionAttributeNames: {"#delInfo": "deliveryInfo"},
+            ExpressionAttributeValues: {":dInfoVal": deliveryInfo},
+            ReturnValues: "UPDATED_NEW"
+        };
+
+        return new Promise(function (resolve, reject) {
+            docClient.update(params, function (err, data) {
+                if (err) {
+                    reject(JSON.stringify(err, null, 2));
+                } else {
+                    resolve(data);
                 }
             })
         })
