@@ -33,7 +33,7 @@ const LaunchRequest_Handler = {
         .getResponse();
 
     } catch (error) {
-      console.log(JSON.stringify(error));
+      console.log("Error in Launch Request", error);
       if (error.statusCode == 403) {
         return responseBuilder
           .speak(constants.messages.NOTIFY_MISSING_PERMISSIONS)
@@ -41,7 +41,7 @@ const LaunchRequest_Handler = {
           .getResponse();
       }
 
-      console.log(JSON.stringify(error));
+      console.log("Launch Handler--------",JSON.stringify(error));
       const response = responseBuilder.speak(constants.messages.ERROR).getResponse();
       return response;
     }

@@ -1,7 +1,7 @@
 const constants = require('./constants');
 const helper = require('./helper');
 const dbService = require('./dbservice');
-
+const file = "customIntents.js";
 module.exports = {
     // Custom Intent Implementation ===================================================
 
@@ -11,6 +11,8 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'OrdersIntent';
         },
         async handle(handlerInput) {
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
+            console.log("Orders Intent Handler Entry");
             const {serviceClientFactory, responseBuilder, requestEnvelope} = handlerInput;
 
             try {
@@ -56,36 +58,33 @@ module.exports = {
                 }
 
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-                let orderListPromise = dbService.getOrdersWithStatus(profileEmail, status);
-                orderListPromise.then(function (orderList) {
-                    say = `Here are your ${status} orders: ${orderList.join(",")}`;
 
-                    return responseBuilder
-                        .addDelegateDirective({
-                            name: 'AskForOrderStatusIntent',
-                            confirmationStatus: 'NONE',
-                            slots: {}
-                        })
-                        .speak(say)
-                        .withStandardCard(
-                            constants.APP_NAME,
-                            orderList.join('\n'),
-                            helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
-                        .reprompt("Would you like to know the status of any open order?")
-                        .getResponse();
-                }).catch(function () {
-                    //TODO
-                });
-
+                let orderList = await dbService.getOrdersWithStatus(profileEmail, status);
+                let orderTitles = orderList.map(order =>  order.productTitle)
+                say = `Here are your ${status} orders: ${orderTitles.join(",")}`;
+                console.log(say);
+                return responseBuilder
+                    .addDelegateDirective({
+                        name: 'AskForOrderStatusIntent',
+                        confirmationStatus: 'NONE',
+                        slots: {}
+                    })
+                    .speak(say)
+                    .withStandardCard(
+                        constants.APP_NAME,
+                        orderTitles.join('\n'),
+                        helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
+                    .reprompt("Would you like to know the status of any open order?")
+                    .getResponse();
             } catch (error) {
-                console.log(JSON.stringify(error));
+                // logger.error(file, handlerInput.requestEnvelope.request.intent.name, error.messages);
+                console.log("inside catch block", error);
                 if (error.statusCode == 403) {
                     return responseBuilder
                         .speak(constants.messages.NOTIFY_MISSING_PERMISSIONS)
                         .withAskForPermissionsConsentCard([constants.EMAIL_PERMISSION])
                         .getResponse();
                 }
-                console.log(JSON.stringify(error));
                 const response = responseBuilder.speak(constants.messages.ERROR).getResponse();
                 return response;
             }
@@ -98,6 +97,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'AskForOrderStatusIntent';
         },
         handle(handlerInput) {
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             const request = handlerInput.requestEnvelope.request;
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -160,8 +160,9 @@ module.exports = {
             const request = handlerInput.requestEnvelope.request;
             return request.type === 'IntentRequest' && request.intent.name === 'OrderStatusIntent';
         },
-        handle(handlerInput) {
-
+        async handle(handlerInput) {
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
+            console.log("OrderStatusIntentHandler Entry");
             const request = handlerInput.requestEnvelope.request;
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -194,35 +195,31 @@ module.exports = {
                         .getResponse();
                 }
                 let profileEmail = sessionAttributes["profileEmail"];
-                let ordersPromise = dbService.getOrdersForProductTitle(profileEmail, name);
-                ordersPromise.then(response => {
-                    sessionAttributes['order'] = orders[0];
-                    say = `Status of your order for ${orders[0].productTitle} is ${orders[0].status}`;
+                let orders = await dbService.getOrdersForProductTitle(profileEmail, name);
+                sessionAttributes['order'] = orders[0];
+                say = `Status of your order for ${orders[0].productTitle} is ${orders[0].status}`;
 
 
-                    let cardText = `Order: ${name}`;
-                    let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
-                    let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                let cardText = `Order: ${name}`;
+                let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
 
-                    sessionAttributes['OrderName'] = name;
-                    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+                sessionAttributes['OrderName'] = name;
+                handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-                    return responseBuilder
-                        .addDelegateDirective({
-                            name: 'OrderActionsIntent',
-                            confirmationStatus: 'NONE',
-                            slots: {}
-                        })
-                        .speak(say)
-                        .withStandardCard(
-                            constants.APP_NAME,
-                            cardText,
-                            smallImageUrl, largeImageUrl)
-                        .reprompt("Would you like to reschedule or cancel this order?")
-                        .getResponse();
-                }).catch(error => {
-                    //TODO
-                });
+                return responseBuilder
+                    .addDelegateDirective({
+                        name: 'OrderActionsIntent',
+                        confirmationStatus: 'NONE',
+                        slots: {}
+                    })
+                    .speak(say)
+                    .withStandardCard(
+                        constants.APP_NAME,
+                        cardText,
+                        smallImageUrl, largeImageUrl)
+                    .reprompt("Would you like to reschedule or cancel this order?")
+                    .getResponse();
             } else if (!slotValues.nameSlot.heardAs) {
                 return responseBuilder
                     .speak("Can you tell me the name of the order?")
@@ -238,6 +235,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'OrderActionsIntent';
         },
         handle(handlerInput) {
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             const request = handlerInput.requestEnvelope.request;
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -327,7 +325,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'RescheduleOrderIntent';
         },
         handle(handlerInput) {
-
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             const request = handlerInput.requestEnvelope.request;
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -421,7 +419,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'CancelOrderIntent';
         },
         handle(handlerInput) {
-
+            // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             const request = handlerInput.requestEnvelope.request;
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();

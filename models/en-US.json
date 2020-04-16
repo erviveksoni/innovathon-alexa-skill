@@ -199,11 +199,11 @@
                         },
                         {
                             "name": {
-                                "value": "active",
+                                "value": "open",
                                 "synonyms": [
                                     "in-progress",
                                     "pending",
-                                    "open"
+                                    "active"
                                 ]
                             }
                         }
