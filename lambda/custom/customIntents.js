@@ -1,5 +1,6 @@
 const constants = require('./constants');
 const helper = require('./helper');
+const dbService = required('./dbservice');
 
 module.exports = {
     // Custom Intent Implementation ===================================================
@@ -10,7 +11,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'OrdersIntent';
         },
         async handle(handlerInput) {
-            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
+            const {serviceClientFactory, responseBuilder, requestEnvelope} = handlerInput;
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -26,7 +27,7 @@ module.exports = {
 
                 const request = requestEnvelope.request;
                 let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-
+                sessionAttributes["profileEmail"] = profileEmail;
                 // delegate to Alexa to collect all the required slots 
                 const currentIntent = request.intent;
                 if (request.dialogState && request.dialogState !== 'COMPLETED') {
@@ -55,22 +56,27 @@ module.exports = {
                 }
 
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-                let orderList = ["Apple IPhone", "Bose Headphones"];
-                say = `Here are your ${status} orders: ${orderList.join(",")}`;
+                let orderListPromise = dbService.getOrdersWithStatus(profileEmail, status);
+                orderListPromise.then(function (orderList) {
+                    say = `Here are your ${status} orders: ${orderList.join(",")}`;
 
-                return responseBuilder
-                    .addDelegateDirective({
-                        name: 'AskForOrderStatusIntent',
-                        confirmationStatus: 'NONE',
-                        slots: {}
-                    })
-                    .speak(say)
-                    .withStandardCard(
-                        constants.APP_NAME,
-                        orderList.join('\n'),
-                        helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
-                    .reprompt("Would you like to know the status of any open order?")
-                    .getResponse();
+                    return responseBuilder
+                        .addDelegateDirective({
+                            name: 'AskForOrderStatusIntent',
+                            confirmationStatus: 'NONE',
+                            slots: {}
+                        })
+                        .speak(say)
+                        .withStandardCard(
+                            constants.APP_NAME,
+                            orderList.join('\n'),
+                            helper.welcomeCardImg.smallImageUrl, helper.welcomeCardImg.largeImageUrl)
+                        .reprompt("Would you like to know the status of any open order?")
+                        .getResponse();
+                }).catch(function () {
+                    //TODO
+                });
+
             } catch (error) {
                 console.log(JSON.stringify(error));
                 if (error.statusCode == 403) {
@@ -131,14 +137,14 @@ module.exports = {
                 handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
                 return responseBuilder
-                .addDelegateDirective({
-                    name: 'OrderStatusIntent',
-                    confirmationStatus: 'NONE',
-                    slots: {}
-                })
-                .speak(say)
-                .reprompt("Which order?")
-                .getResponse();
+                    .addDelegateDirective({
+                        name: 'OrderStatusIntent',
+                        confirmationStatus: 'NONE',
+                        slots: {}
+                    })
+                    .speak(say)
+                    .reprompt("Which order?")
+                    .getResponse();
 
             } else if ((slotValues.confirmSlot.ERstatus === 'ER_SUCCESS_NO_MATCH') || (!slotValues.confirmSlot.heardAs)) {
                 return responseBuilder
@@ -160,7 +166,7 @@ module.exports = {
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-            // delegate to Alexa to collect all the required slots 
+            // delegate to Alexa to collect all the required slots
             const currentIntent = request.intent;
             if (request.dialogState && request.dialogState !== 'COMPLETED') {
                 return handlerInput.responseBuilder
@@ -176,7 +182,7 @@ module.exports = {
             let slotValues = helper.getSlotValues(request.intent.slots);
             // helper.getSlotValues returns .heardAs, .resolved, and .isValidated for each slot, according to request slot status codes ER_SUCCESS_MATCH, ER_SUCCESS_NO_MATCH, or traditional simple request slot without resolutions
 
-            //   SLOT: snackSlot 
+            //   SLOT: snackSlot
             if (slotValues.nameSlot.heardAs) {
 
                 let name = slotValues.nameSlot.heardAs;
@@ -187,30 +193,36 @@ module.exports = {
                         .withShouldEndSession(true)
                         .getResponse();
                 }
-                else {
-                    say = `Your order for ${name} is getting dispatched`;
-                }
+                let profileEmail = sessionAttributes["profileEmail"];
+                let ordersPromise = dbService.getOrdersForProductTitle(profileEmail, name);
+                ordersPromise.then(response => {
+                    sessionAttributes['order'] = orders[0];
+                    say = `Status of your order for ${orders[0].productTitle} is ${orders[0].status}`;
 
-                let cardText = `Order: ${name}`;
-                let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
-                let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
-                
-                sessionAttributes['OrderName'] = name;
-                handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-                return responseBuilder
-                    .addDelegateDirective({
-                        name: 'OrderActionsIntent',
-                        confirmationStatus: 'NONE',
-                        slots: {}
-                    })
-                    .speak(say)
-                    .withStandardCard(
-                        constants.APP_NAME,
-                        cardText,
-                        smallImageUrl, largeImageUrl)
-                    .reprompt("Would you like to reschedule or cancel this order?")
-                    .getResponse();
+                    let cardText = `Order: ${name}`;
+                    let largeImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+                    let smallImageUrl = "https://www.apple.com/v/iphone-11-pro/c/images/overview/display/pro_display_hero_1_dark__bs3bzy9s1seq_large_2x.jpg";
+
+                    sessionAttributes['OrderName'] = name;
+                    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+                    return responseBuilder
+                        .addDelegateDirective({
+                            name: 'OrderActionsIntent',
+                            confirmationStatus: 'NONE',
+                            slots: {}
+                        })
+                        .speak(say)
+                        .withStandardCard(
+                            constants.APP_NAME,
+                            cardText,
+                            smallImageUrl, largeImageUrl)
+                        .reprompt("Would you like to reschedule or cancel this order?")
+                        .getResponse();
+                }).catch(error => {
+                    //TODO
+                });
             } else if (!slotValues.nameSlot.heardAs) {
                 return responseBuilder
                     .speak("Can you tell me the name of the order?")
@@ -230,7 +242,7 @@ module.exports = {
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-            // delegate to Alexa to collect all the required slots 
+            // delegate to Alexa to collect all the required slots
             const currentIntent = request.intent;
             if (request.dialogState && request.dialogState !== 'COMPLETED') {
                 return handlerInput.responseBuilder
@@ -245,7 +257,7 @@ module.exports = {
 
             let slotValues = helper.getSlotValues(request.intent.slots);
 
-            //   SLOT: confirmSlot 
+            //   SLOT: confirmSlot
             if (slotValues.actionsSlot.ERstatus === 'ER_SUCCESS_MATCH') {
 
                 let actions = slotValues.actionsSlot.resolved;
@@ -320,7 +332,7 @@ module.exports = {
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-            // delegate to Alexa to collect all the required slots 
+            // delegate to Alexa to collect all the required slots
             const currentIntent = request.intent;
             if (request.dialogState && request.dialogState !== 'COMPLETED') {
                 return handlerInput.responseBuilder
@@ -337,7 +349,7 @@ module.exports = {
 
             console.log("SLOT VALUES: " + JSON.stringify(slotValues))
 
-            //   SLOT: nameSlot 
+            //   SLOT: nameSlot
             let name = '';
             if (slotValues.nameSlot.heardAs) {
                 name = slotValues.nameSlot.heardAs;
@@ -414,7 +426,7 @@ module.exports = {
             const responseBuilder = handlerInput.responseBuilder;
             let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-            // delegate to Alexa to collect all the required slots 
+            // delegate to Alexa to collect all the required slots
             const currentIntent = request.intent;
             if (request.dialogState && request.dialogState !== 'COMPLETED') {
                 return handlerInput.responseBuilder
@@ -429,7 +441,7 @@ module.exports = {
             let slotValues = helper.getSlotValues(request.intent.slots);
             // getSlotValues returns .heardAs, .resolved, and .isValidated for each slot, according to request slot status codes ER_SUCCESS_MATCH, ER_SUCCESS_NO_MATCH, or traditional simple request slot without resolutions
 
-            //   SLOT: nameSlot 
+            //   SLOT: nameSlot
             let name = '';
             if (slotValues.orderNameSlot.heardAs) {
                 name = slotValues.orderNameSlot.heardAs;
@@ -446,7 +458,9 @@ module.exports = {
                     .reprompt("What's the name of the order?")
                     .getResponse();
             }
-
+            let order = sessionAttributes['order'];
+            let statusPromise = dbService.cancelOrder(order);
+            //TODO need to handle promise
             say = `Cancelled your order for ${name}. Have a nice day!`;
             sessionAttributes['OrderName'] = '';
             handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
