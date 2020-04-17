@@ -13,7 +13,7 @@ module.exports = {
         async handle(handlerInput) {
             // logger.info(file, handlerInput.requestEnvelope.request.intent.name, "Entry");
             console.log("Orders Intent Handler Entry");
-            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
+            const {serviceClientFactory, responseBuilder, requestEnvelope} = handlerInput;
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -168,6 +168,8 @@ module.exports = {
         },
         async handle(handlerInput) {
             const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
+
+
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -356,7 +358,6 @@ module.exports = {
         },
         async handle(handlerInput) {
             const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
-
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
                 const profileEmail = await upsServiceClient.getProfileEmail();
@@ -445,6 +446,12 @@ module.exports = {
                 if (orders && orders.length > 0) {
 
                     let order = orders[0];
+                    let deliveryInfo = {};
+                    deliveryInfo.date = sessionAttributes["Day"];
+                    beforeAfter === "after"
+                        ? deliveryInfo.startTime = sessionAttributes["Time"]
+                        : deliveryInfo.endTime = sessionAttributes["Time"];
+                    dbService.rescheduleOrder(order, deliveryInfo);
                     say = `We have rescheduled your order for ${name} on ${day} ${beforeAfter} ${deliveryTime}. Have a nice day!`;
 
                     sessionAttributes['OrderName'] = '';
@@ -462,8 +469,7 @@ module.exports = {
                         .withShouldEndSession(true)
                         .getResponse();
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 // logger.error(file, handlerInput.requestEnvelope.request.intent.name, error.messages);
                 console.log("inside catch block", error);
                 if (error.statusCode == 403) {
@@ -485,7 +491,6 @@ module.exports = {
         },
         async handle(handlerInput) {
             const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
-
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
                 const profileEmail = await upsServiceClient.getProfileEmail();

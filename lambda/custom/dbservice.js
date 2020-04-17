@@ -98,7 +98,7 @@ module.exports = {
         })
     },
 
-    rescheduleOrderWithProductTitle: function (order, deliveryInfo) {
+    rescheduleOrder: function (order, deliveryInfo) {
         AWS.config.update({
             region: region,
             endpoint: endPoint
