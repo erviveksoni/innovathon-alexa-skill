@@ -189,4 +189,39 @@ module.exports = {
             });
         });
     },
+
+    updateProactiveNotificationRegistration: function (userId, emailAddress) {
+
+        AWS.config.update({
+            region: region,
+            endpoint: endPoint
+        });
+
+        let docClient = new AWS.DynamoDB.DocumentClient();
+
+        let params = {
+            TableName: proactiveTableName,
+            Key: {
+                "user_id": String(userId)
+            },
+            UpdateExpression: "set emailAddress = :emailAddress",
+            ExpressionAttributeValues:{
+                ":emailAddress": emailAddress
+            },
+            ReturnValues: "UPDATED_NEW"
+        };
+
+        return new Promise((resolve, reject) => {
+            docClient.update(params, (error, data) => {
+                if (error) {
+                    console.log(`Item Update ERROR=${error.stack}`);
+                    reject(JSON.stringify(error, null, 2));
+                } else {
+                    console.log(`Updated Item =${JSON.stringify(data)}`);
+                    resolve({ statusCode: 200, body: JSON.stringify(params.Item) });
+                }
+            });
+        });
+    },
+
 };

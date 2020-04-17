@@ -29,7 +29,7 @@ module.exports = {
 
                 const request = requestEnvelope.request;
                 let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-
+                
                 // delegate to Alexa to collect all the required slots 
                 const currentIntent = request.intent;
                 if (request.dialogState && request.dialogState !== 'COMPLETED') {
@@ -37,6 +37,9 @@ module.exports = {
                         .addDelegateDirective(currentIntent)
                         .getResponse();
                 }
+
+                // update the notification record
+                await dbService.updateProactiveNotificationRegistration(requestEnvelope.context.System.user.userId, profileEmail);
 
                 let say = 'Okay !';
                 let slotValues = helper.getSlotValues(request.intent.slots);
@@ -164,7 +167,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'OrderStatusIntent';
         },
         async handle(handlerInput) {
-            const { serviceClientFactory, responseBuilder } = handlerInput;
+            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -178,18 +181,20 @@ module.exports = {
                         .getResponse();
                 }
 
-                console.log("OrderStatusIntentHandler Entry");
-                const request = handlerInput.requestEnvelope.request;
+                // delegate to Alexa to collect all the required slots
+                const request = requestEnvelope.request;
                 const responseBuilder = handlerInput.responseBuilder;
                 let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-                // delegate to Alexa to collect all the required slots
                 const currentIntent = request.intent;
                 if (request.dialogState && request.dialogState !== 'COMPLETED') {
                     return handlerInput.responseBuilder
                         .addDelegateDirective(currentIntent)
                         .getResponse();
                 }
+
+                // update the notification record
+                await dbService.updateProactiveNotificationRegistration(requestEnvelope.context.System.user.userId, profileEmail);
 
                 let say = '';
                 let slotValues = helper.getSlotValues(request.intent.slots);
@@ -350,7 +355,7 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'RescheduleOrderIntent';
         },
         async handle(handlerInput) {
-            const { serviceClientFactory, responseBuilder } = handlerInput;
+            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
 
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
@@ -364,7 +369,7 @@ module.exports = {
                         .getResponse();
                 }
 
-                const request = handlerInput.requestEnvelope.request;
+                const request = requestEnvelope.request;
                 let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
                 // delegate to Alexa to collect all the required slots
@@ -374,6 +379,9 @@ module.exports = {
                         .addDelegateDirective(currentIntent)
                         .getResponse();
                 }
+
+                // update the notification record
+                await dbService.updateProactiveNotificationRegistration(requestEnvelope.context.System.user.userId, profileEmail);
 
                 let say = '';
 
@@ -438,7 +446,7 @@ module.exports = {
 
                     let order = orders[0];
                     say = `We have rescheduled your order for ${name} on ${day} ${beforeAfter} ${deliveryTime}. Have a nice day!`;
-                    
+
                     sessionAttributes['OrderName'] = '';
                     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
@@ -476,7 +484,8 @@ module.exports = {
             return request.type === 'IntentRequest' && request.intent.name === 'CancelOrderIntent';
         },
         async handle(handlerInput) {
-            const { serviceClientFactory, responseBuilder } = handlerInput;
+            const { serviceClientFactory, responseBuilder, requestEnvelope } = handlerInput;
+
             try {
                 const upsServiceClient = serviceClientFactory.getUpsServiceClient();
                 const profileEmail = await upsServiceClient.getProfileEmail();
@@ -489,7 +498,7 @@ module.exports = {
                         .getResponse();
                 }
 
-                const request = handlerInput.requestEnvelope.request;
+                const request = requestEnvelope.request;
                 const responseBuilder = handlerInput.responseBuilder;
                 let sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
@@ -500,6 +509,9 @@ module.exports = {
                         .addDelegateDirective(currentIntent)
                         .getResponse();
                 }
+
+                // update the notification record
+                await dbService.updateProactiveNotificationRegistration(requestEnvelope.context.System.user.userId, profileEmail);
 
                 let say = '';
                 let slotValues = helper.getSlotValues(request.intent.slots);
