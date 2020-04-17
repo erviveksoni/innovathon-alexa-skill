@@ -64,6 +64,7 @@ exports.handler = skillBuilder
     systemIntents.AMAZON_StopIntent_Handler,
     systemIntents.AMAZON_NavigateHomeIntent_Handler,
     handlers.ProactiveEventHandler,
+    handlers.SkillDisabledEventHandler,
     handlers.SessionEndedHandler
   )
   .addRequestInterceptors(interceptors.RequestLog)

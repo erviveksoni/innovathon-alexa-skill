@@ -60,6 +60,9 @@
       },
       "subscriptions": [
         {
+          "eventName": "SKILL_DISABLED"
+        },
+        {
           "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
         }
       ],

@@ -159,4 +159,34 @@ module.exports = {
             });
         });
     },
+
+    deleteProactiveNotificationRegistration: function (userId) {
+
+        AWS.config.update({
+            region: region,
+            endpoint: endPoint
+        });
+
+        let docClient = new AWS.DynamoDB.DocumentClient();
+       
+        var params = {
+            TableName: proactiveTableName,
+            Key: {
+                "user_id": String(userId)
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+
+            docClient.delete(params, function(error, data) {
+                if (error) {
+                    console.log(`Item Delete ERROR=${error.stack}`);
+                    reject(JSON.stringify(error, null, 2));
+                } else {
+                    console.log(`Deleted Item =${JSON.stringify(data)}`);
+                    resolve({ statusCode: 200, body: JSON.stringify(data, null, 2) });
+                }
+            });
+        });
+    },
 };
