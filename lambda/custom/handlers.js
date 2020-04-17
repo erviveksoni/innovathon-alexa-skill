@@ -1,3 +1,4 @@
+const dbService = require('./dbservice');
 
 module.exports = {
 
@@ -31,15 +32,22 @@ module.exports = {
 
   ProactiveEventHandler: {
     canHandle(handlerInput) {
-      console.log("Proactive Handler --------- ",JSON.stringify(handlerInput));
+      console.log("--------- Proactive Handler --------- ", JSON.stringify(handlerInput));
       const request = handlerInput.requestEnvelope.request;
       return request.type === 'AlexaSkillEvent.ProactiveSubscriptionChanged';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
       try {
+
         console.log("AWS User " + handlerInput.requestEnvelope.context.System.user.userId);
         console.log("API Endpoint " + handlerInput.requestEnvelope.context.System.apiEndpoint);
         console.log("Permissions" + JSON.stringify(handlerInput.requestEnvelope.request.body.subscriptions));
+
+        await dbService.registerForProactiveNotifications(
+          handlerInput.requestEnvelope.context.System.user.userId,
+          handlerInput.requestEnvelope.context.System.apiEndpoint);
+          
+        console.log("Registered user for notifications")
       }
       catch (error) {
         console.error("Error: ProactiveEventHandler Not Enabled By User " + JSON.stringify(error));

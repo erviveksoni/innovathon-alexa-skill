@@ -2,6 +2,8 @@ const AWS = require("aws-sdk");
 const region = "us-east-1";
 const endPoint = "https://dynamodb.us-east-1.amazonaws.com";
 const orderTableName = "order_details";
+const proactiveTableName = "proactive_event_registrations";
+
 module.exports = {
     getOrdersWithStatus: function (emailId, status) {
 
@@ -96,7 +98,6 @@ module.exports = {
         })
     },
 
-
     rescheduleOrderWithProductTitle: function (order, deliveryInfo) {
         AWS.config.update({
             region: region,
@@ -127,5 +128,35 @@ module.exports = {
                 }
             })
         })
+    },
+
+    registerForProactiveNotifications: function (userId, apiEndpoint) {
+
+        AWS.config.update({
+            region: region,
+            endpoint: endPoint
+        });
+
+        let docClient = new AWS.DynamoDB.DocumentClient();
+
+        let params = {
+            TableName: proactiveTableName,
+            Item: {
+                'user_id': String(userId),
+                'apiEndpoint': String(apiEndpoint),
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            docClient.put(params, (error, data) => {
+                if (error) {
+                    console.log(`Item Insert ERROR=${error.stack}`);
+                    reject(JSON.stringify(error, null, 2));
+                } else {
+                    console.log(`Inserted Item =${JSON.stringify(data)}`);
+                    resolve({ statusCode: 200, body: JSON.stringify(params.Item) });
+                }
+            });
+        });
     },
 };
