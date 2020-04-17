@@ -33,7 +33,8 @@ const getUserAskToken = (all_rows, emailAddress) => {
     all_rows.forEach((it) => {
         if (it.emailAddress === emailAddress) {
             result = it;
-            return result;
+
+            return true;
         }
     });
 
@@ -88,7 +89,7 @@ const sendAlexaNotification = (url, token, user_id, expectedArrival) => {
             + `         \"deliveryDetails\": {\n                    \"expectedArrival\": \"${expectedArrival}\"\n           `
             + `     }\n            },\n            \"order\": {\n                \"seller\": {\n         `
             + `     \"name\": \"localizedattribute:sellerName\"\n                }\n            }\n        }\n    },\n  `
-            + `       \"localizedAttributes\": [{\n\t\t\t\"locale\": \"en-US\",\n\t\t\t\"sellerName\": \"OTTO\"\n\t\t}\n\t],\n    `
+            + `       \"localizedAttributes\": [{\n\t\t\t\"locale\": \"en-US\",\n\t\t\t\"sellerName\": \"Talky\"\n\t\t}\n\t],\n    `
             + `       \"relevantAudience\": {\n        \"type\": \"Unicast\",\n        \"payload\": {\n            \"user\": \"${user_id}\"\n        }\n    }\n}`
     };
 
@@ -117,7 +118,18 @@ exports.handler = async (event, context, callback) => {
 
             if (record.eventName == 'MODIFY') {
 
-                var orderState = record.dynamodb.NewImage.order_state.S;
+                //console.log(JSON.stringify(record))
+
+                if (!record.dynamodb.NewImage.hasOwnProperty("order_state") ||
+                    !record.dynamodb.NewImage.hasOwnProperty("customerId") ||
+                    !record.dynamodb.NewImage.hasOwnProperty("deliveryInfo")) {
+
+                    console.log("Skipping record...");
+
+                    return true
+                }
+
+                var orderState = JSON.stringify(record.dynamodb.NewImage.order_state.S);
                 var customerId = JSON.stringify(record.dynamodb.NewImage.customerId.S);
                 var date = JSON.stringify(record.dynamodb.NewImage.deliveryInfo.M.date.S);
                 var time = JSON.stringify(record.dynamodb.NewImage.deliveryInfo.M.startTime.S);
@@ -128,17 +140,22 @@ exports.handler = async (event, context, callback) => {
                 var orderStatestring = new String()
                 orderStatestring = orderState.toString().replace(/"/g, "");
 
-                console.log(`${orderStatestring} ++ ${customerIdstring} ++ ${date} ++ ${time}`);
+                var datestring = new String()
+                datestring = date.toString().replace(/"/g, "");
+
+                var timestring = new String()
+                timestring = time.toString().replace(/"/g, "");
+
+                console.log(`${orderStatestring} ++ ${customerIdstring} ++ ${datestring} ++ ${timestring}`);
 
                 if (orderStatestring === "ORDER_OUT_FOR_DELIVERY") {
 
                     let askToken = getUserAskToken(rows, customerIdstring);
-
-                    var todaysdate = new Date("2020-04-20 14:45:00");
-                    // IST conversion
-                    // todaysdate.setTime(todaysdate.getTime() + todaysdate.getTimezoneOffset() * 60 * 1000);
-                    // UTC conversion
+                    var dateStr = `${datestring} ${timestring}:00`;
+                    // Temporary hack to Conver to UTC from IST
+                    var todaysdate = new Date(new Date(dateStr) - 19800000);
                     var nowtime = todaysdate.toISOString();
+                    console.log(nowtime);
 
                     await sendAlexaNotification(
                         askToken.apiEndpoint,
