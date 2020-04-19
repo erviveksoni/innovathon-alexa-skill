@@ -1,6 +1,9 @@
 # Innovathon-alexa-skill
 Alexa skill developed for innovathon
 
+# Architecture
+
+<img src="./images/arch_diag.png">
 
 # Alexa Commands:
 
@@ -8,7 +11,6 @@ Alexa skill developed for innovathon
 **User**: Alexa open `{invocation name}`
 
 **Alexa**: Hello `user` and welcome to Store ! How can I help You today ?.
-
 
 ## Show orders:
 
